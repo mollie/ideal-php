@@ -1,0 +1,12 @@
+{
+    "name": "mollienl/ideal-php",
+    "description": "Mollie iDEAL module voor PHP",
+    "autoload": {
+        "classmap": ["Mollie/"]
+    },
+    "extra": {
+        "branch-alias": {
+            "dev-master": "1.0.x-dev"
+        }
+    }
+}
