@@ -6,11 +6,6 @@
  */
 class Mollie_iDEAL_Payment
 {
-	/**
-	 * Minimum bedrag in cent.
-	 */
-	const MIN_TRANS_AMOUNT = 120;
-
 	protected $partner_id;
 	protected $profile_key;
 
@@ -213,7 +208,7 @@ class Mollie_iDEAL_Payment
 	{
 		if (!$this->setDescription($description) or !$this->setAmount($amount))
 		{
-			$this->error_message = "U moet een omschrijving én bedrag (in centen) opgeven voor de iDEAL link. Tevens moet het bedrag minstens " . self::MIN_TRANS_AMOUNT . ' eurocent zijn. U gaf ' . (int) $amount . ' cent op.';
+			$this->error_message = "U moet een omschrijving én bedrag (in centen) opgeven voor de iDEAL link.";
 			return false;
 		}
 		
@@ -395,10 +390,6 @@ class Mollie_iDEAL_Payment
 
 		if (is_float($amount)) {
 			$amount = round($amount);
-		}
-
-		if (self::MIN_TRANS_AMOUNT > $amount) {
-			return false;
 		}
 
 		return ($this->amount = $amount);

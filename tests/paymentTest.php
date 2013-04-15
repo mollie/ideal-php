@@ -296,21 +296,6 @@ class idealClassTest extends PHPUnit_Framework_TestCase
 		$this->assertEquals("Kon XML resultaat niet verwerken", $iDEAL->getErrorMessage());
 	}
 
-	public function testSetAmountCannotBeLessThanMinimum()
-	{
-		$iDEAL = new Mollie_iDEAL_Payment(1001);
-		$this->assertFalse($iDEAL->setAmount(Mollie_iDEAL_Payment::MIN_TRANS_AMOUNT - 1));
-		$this->assertEmpty($iDEAL->getAmount());
-
-		$this->assertEquals(Mollie_iDEAL_Payment::MIN_TRANS_AMOUNT, $iDEAL->setAmount(Mollie_iDEAL_Payment::MIN_TRANS_AMOUNT));
-		$this->assertEquals(Mollie_iDEAL_Payment::MIN_TRANS_AMOUNT, $iDEAL->getAmount());
-
-		$this->assertFalse($iDEAL->setAmount("foobar"));
-
-		$iDEAL->setAmount(Mollie_iDEAL_Payment::MIN_TRANS_AMOUNT + 0.01);
-		$this->assertEquals(Mollie_iDEAL_Payment::MIN_TRANS_AMOUNT, $iDEAL->getAmount());
-	}
-
 	public function testCannotSetPartnerIdToProfileKey()
 	{
 		$iDEAL = new Mollie_iDEAL_Payment(1001);
