@@ -6,6 +6,8 @@
  */
 class Mollie_iDEAL_Payment
 {
+	const TEST_BANK_ID = '9999';
+
 	protected $partner_id;
 	protected $profile_key;
 
@@ -368,6 +370,9 @@ class Mollie_iDEAL_Payment
 	public function setBankId ($bank_id)
 	{
 		if (!is_numeric($bank_id))
+			return false;
+
+		if (!$this->testmode && $bank_id == self::TEST_BANK_ID)
 			return false;
 
 		return ($this->bank_id = $bank_id);
