@@ -6,6 +6,13 @@
  */
 class Mollie_iDEAL_Payment
 {
+	const STATUS_OPEN           = 'Open';
+	const STATUS_SUCCESS        = 'Success';
+	const STATUS_CANCELLED      = 'Cancelled';
+	const STATUS_FAILURE        = 'Failure';
+	const STATUS_EXPIRED        = 'Expired';
+	const STATUS_CHECKED_BEFORE = 'CheckedBefore';
+
 	const TEST_BANK_ID = '9999';
 
 	protected $partner_id;

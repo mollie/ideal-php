@@ -29,6 +29,7 @@ class idealClassTest extends PHPUnit_Framework_TestCase
 		<amount>1000</amount>
 		<currency>EUR</currency>
 		<payed>true</payed>
+		<status>Success</status>
 		<message>This iDEAL-order has successfuly been payed for, and this is the first time you check it.</message>
 	</order>
 </response>
@@ -152,6 +153,25 @@ class idealClassTest extends PHPUnit_Framework_TestCase
 			->will($this->returnValue(self::$create_payment_xml));
 
 		$iDEAL->checkPayment("09f911029d74e35bd84156c5635688c0");
+	}
+
+	public function testCheckPaymentsReadsReturnData ()
+	{
+		/** @var Mollie_iDEAL_Payment $iDEAL */
+		$iDEAL = $this->getMock("Mollie_iDEAL_Payment", array("_sendRequest"), array(1001));
+		$iDEAL->setTestmode(TRUE);
+
+		$iDEAL->expects($this->once())
+			->method("_sendRequest")
+			->with("/xml/ideal/", "a=check&partnerid=1001&transaction_id=09f911029d74e35bd84156c5635688c0&testmode=true")
+			->will($this->returnValue(self::$check_payment_xml));
+
+		$iDEAL->checkPayment("09f911029d74e35bd84156c5635688c0");
+
+		$this->assertEquals($iDEAL->getTransactionId(), '09f911029d74e35bd84156c5635688c0');
+		$this->assertEquals($iDEAL->getAmount(), 1000);
+		$this->assertTrue($iDEAL->getPaidStatus());
+		$this->assertEquals($iDEAL->getBankStatus(), Mollie_iDEAL_Payment::STATUS_SUCCESS);
 	}
 
 	public function testCheckPaymentsReturnsFalseInCaseOfBankError ()
