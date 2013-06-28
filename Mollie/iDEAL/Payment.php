@@ -49,6 +49,7 @@ class Mollie_iDEAL_Payment
 	protected $error_code      = 0;
 
 	protected $api_host        = 'https://secure.mollie.nl';
+	protected $api_path        = '/xml/ideal/';
 	protected $api_port        = 443;
 
 	public function __construct ($partner_id)
@@ -73,7 +74,7 @@ class Mollie_iDEAL_Payment
 		}
 
 		$banks_xml = $this->_sendRequest (
-			'/xml/ideal/',
+			$this->api_path,
 			http_build_query($query_variables, '', '&')
 		);
 
@@ -149,14 +150,14 @@ class Mollie_iDEAL_Payment
 			'reporturl'   => $this->getReportURL(),
 			'returnurl'   => $this->getReturnURL(),
 		);
-		
+
 		if ($this->getProfileKey())
 		{
 			$query_variables['profile_key'] = $this->getProfileKey();
 		}
 
 		$create_xml = $this->_sendRequest(
-			'/xml/ideal/',
+			$this->api_path,
 			http_build_query($query_variables, '', '&')
 		);
 
@@ -184,7 +185,7 @@ class Mollie_iDEAL_Payment
 			$this->error_message = "Er is een onjuist transactie ID opgegeven";
 			return false;
 		}
-		
+
 		$query_variables = array (
 			'a'              => 'check',
 			'partnerid'      => $this->getPartnerId(),
@@ -196,9 +197,9 @@ class Mollie_iDEAL_Payment
 		}
 
 		$check_xml = $this->_sendRequest(
-			'/xml/ideal/',
+			$this->api_path,
 			http_build_query($query_variables, '', '&')
-			);
+		);
 
 		$check_object = $this->_XMLtoObject($check_xml);
 
@@ -210,7 +211,7 @@ class Mollie_iDEAL_Payment
 		$this->status        = (string) $check_object->order->status;
 		$this->amount        = (int) $check_object->order->amount;
 		$this->consumer_info = (isset($check_object->order->consumer)) ? (array) $check_object->order->consumer : array();
-		
+
 		return true;
 	}
 
@@ -221,7 +222,7 @@ class Mollie_iDEAL_Payment
 			$this->error_message = "U moet een omschrijving én bedrag (in centen) opgeven voor de iDEAL link.";
 			return false;
 		}
-		
+
 		$query_variables = array (
 			'a'           => 'create-link',
 			'partnerid'   => $this->partner_id,
@@ -231,9 +232,9 @@ class Mollie_iDEAL_Payment
 		);
 
 		$create_xml = $this->_sendRequest(
-			'/xml/ideal/',
+			$this->api_path,
 			http_build_query($query_variables, '', '&')
-			);
+		);
 
 		$create_object = $this->_XMLtoObject($create_xml);
 
@@ -292,7 +293,7 @@ class Mollie_iDEAL_Payment
 
 		curl_close($ch);
 
-		return $body;	
+		return $body;
 	}
 
 	protected function _XMLtoObject ($xml)
@@ -345,18 +346,18 @@ class Mollie_iDEAL_Payment
 
 	/* Getters en setters */
 	public function setProfileKey($profile_key)
-	{		
+	{
 		if (is_null($profile_key))
 			return false;
-			
+
 		return ($this->profile_key = $profile_key);
 	}
-	
+
 	public function getProfileKey()
 	{
 		return $this->profile_key;
 	}
-	
+
 	public function setPartnerId ($partner_id)
 	{
 		if (!is_numeric($partner_id)) {
@@ -431,7 +432,12 @@ class Mollie_iDEAL_Payment
 
 	public function setReturnURL ($return_url)
 	{
-		return ($this->return_url = filter_var($return_url, FILTER_VALIDATE_URL));
+		if (!preg_match('~^https?://~i', $return_url))
+		{
+			return FALSE;
+		}
+
+		return ($this->return_url = $return_url);
 	}
 
 	public function getReturnURL ()
@@ -441,7 +447,12 @@ class Mollie_iDEAL_Payment
 
 	public function setReportURL ($report_url)
 	{
-		return ($this->report_url = filter_var($report_url, FILTER_VALIDATE_URL));
+		if (!preg_match('~^https?://~i', $report_url))
+		{
+			return FALSE;
+		}
+
+		return ($this->report_url = $report_url);
 	}
 
 	public function getReportURL ()
@@ -476,7 +487,7 @@ class Mollie_iDEAL_Payment
 	{
 		return $this->paid_status;
 	}
-	
+
 	public function getBankStatus()
 	{
 		return $this->status;
